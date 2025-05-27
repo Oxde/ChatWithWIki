@@ -31,8 +31,8 @@ class ChainFactory:
         if not self.api_key:
             raise ValueError("OpenAI API key is required")
         
-        # Clean the API key - remove whitespace, newlines, etc.
-        self.api_key = self.api_key.strip().replace('\n', '').replace('\r', '')
+        # Clean the API key - remove whitespace, newlines, equals signs, etc.
+        self.api_key = self.api_key.strip().replace('\n', '').replace('\r', '').replace('=', '')
         
         if not self.api_key.startswith('sk-'):
             raise ValueError(f"Invalid OpenAI API key format. Key should start with 'sk-' but starts with: '{self.api_key[:10]}...'")

@@ -278,7 +278,7 @@ def debug_info():
     """Debug endpoint to check configuration without exposing sensitive data."""
     try:
         raw_api_key = os.getenv('OPENAI_API_KEY')
-        cleaned_api_key = raw_api_key.strip().replace('\n', '').replace('\r', '') if raw_api_key else None
+        cleaned_api_key = raw_api_key.strip().replace('\n', '').replace('\r', '').replace('=', '') if raw_api_key else None
         
         return jsonify({
             "openai_key_configured": bool(raw_api_key),
