@@ -277,15 +277,20 @@ def health_check():
 def debug_info():
     """Debug endpoint to check configuration without exposing sensitive data."""
     try:
-        api_key = os.getenv('OPENAI_API_KEY')
+        raw_api_key = os.getenv('OPENAI_API_KEY')
+        cleaned_api_key = raw_api_key.strip().replace('\n', '').replace('\r', '') if raw_api_key else None
+        
         return jsonify({
-            "openai_key_configured": bool(api_key),
-            "openai_key_length": len(api_key) if api_key else 0,
-            "openai_key_prefix": api_key[:7] + "..." if api_key and len(api_key) > 10 else "Invalid",
+            "openai_key_configured": bool(raw_api_key),
+            "raw_key_length": len(raw_api_key) if raw_api_key else 0,
+            "cleaned_key_length": len(cleaned_api_key) if cleaned_api_key else 0,
+            "raw_key_prefix": repr(raw_api_key[:10]) if raw_api_key and len(raw_api_key) > 10 else "Invalid",
+            "cleaned_key_prefix": cleaned_api_key[:7] + "..." if cleaned_api_key and len(cleaned_api_key) > 10 else "Invalid",
+            "key_starts_with_sk": cleaned_api_key.startswith('sk-') if cleaned_api_key else False,
             "chain_factory_initialized": chain_factory is not None,
             "environment": os.getenv('FLASK_ENV', 'production'),
             "python_version": os.sys.version,
-            "available_env_vars": [key for key in os.environ.keys() if not key.startswith('_')]
+            "openai_env_var_count": len([k for k in os.environ.keys() if k == 'OPENAI_API_KEY'])
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
