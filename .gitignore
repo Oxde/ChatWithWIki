@@ -74,4 +74,8 @@ instance/
 
 # Temporary files
 *.tmp
-*.temp 
+*.temp
+
+# Documentation files (keep local)
+DEPLOYMENT_GUIDE.md
+ChatWithWiki_Technical_Deep_Dive.md 

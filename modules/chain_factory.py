@@ -13,6 +13,8 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain.schema import Document
 import os
 import tempfile
+import time
+import random
 
 
 class ChainFactory:
@@ -32,7 +34,9 @@ class ChainFactory:
         # Initialize embeddings
         self.embeddings = OpenAIEmbeddings(
             openai_api_key=self.api_key,
-            model="text-embedding-ada-002"
+            model="text-embedding-ada-002",
+            request_timeout=60,  # Increased timeout
+            max_retries=3        # Add retry logic
         )
         
         # Initialize LLM
@@ -40,11 +44,37 @@ class ChainFactory:
             openai_api_key=self.api_key,
             model="gpt-3.5-turbo",
             temperature=0.3,
-            max_tokens=800
+            max_tokens=800,
+            request_timeout=60,  # Increased timeout
+            max_retries=3        # Add retry logic
         )
         
         # Initialize chat history
         self.chat_history = []
+    
+    def _retry_with_backoff(self, func, max_retries=3, base_delay=1):
+        """
+        Retry function with exponential backoff.
+        
+        Args:
+            func: Function to retry
+            max_retries: Maximum number of retries
+            base_delay: Base delay in seconds
+            
+        Returns:
+            Function result
+        """
+        for attempt in range(max_retries + 1):
+            try:
+                return func()
+            except Exception as e:
+                if attempt == max_retries:
+                    raise e
+                
+                # Exponential backoff with jitter
+                delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
+                time.sleep(delay)
+                continue
     
     def create_vector_store(self, documents: list[Document]) -> Chroma:
         """
@@ -62,14 +92,15 @@ class ChainFactory:
         # Create temporary directory for Chroma
         temp_dir = tempfile.mkdtemp()
         
-        # Create Chroma vector store
-        vector_store = Chroma.from_documents(
-            documents=documents,
-            embedding=self.embeddings,
-            persist_directory=temp_dir
-        )
+        # Create Chroma vector store with retry logic
+        def create_store():
+            return Chroma.from_documents(
+                documents=documents,
+                embedding=self.embeddings,
+                persist_directory=temp_dir
+            )
         
-        return vector_store
+        return self._retry_with_backoff(create_store, max_retries=3, base_delay=2)
     
     def create_diverse_retriever(self, vector_store: Chroma, search_type: str = "mmr") -> object:
         """

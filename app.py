@@ -85,7 +85,20 @@ def load_article():
         logger.info(f"Created {len(documents)} text chunks")
         
         # Create conversational chain
-        chain, retriever, chat_history = chain_factory.create_wiki_chain(documents)
+        try:
+            chain, retriever, chat_history = chain_factory.create_wiki_chain(documents)
+        except Exception as openai_error:
+            logger.error(f"OpenAI connection error: {str(openai_error)}")
+            if "timeout" in str(openai_error).lower() or "connection" in str(openai_error).lower():
+                return jsonify({
+                    "error": "OpenAI API connection timeout. Please try again in a moment.",
+                    "details": "The AI service is temporarily unavailable due to network issues."
+                }), 503
+            else:
+                return jsonify({
+                    "error": "AI service initialization failed. Please try again.",
+                    "details": str(openai_error)
+                }), 500
         
         # Create session
         session_id = session_manager.create_session(
