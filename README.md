@@ -1,135 +1,82 @@
-# ChatWithWiki - Wikipedia Conversational Chatbot
+# ChatWithWiki 🤖📚
 
-A Flask-based web application that allows users to have conversations with Wikipedia articles using AI-powered question answering.
+A conversational AI chatbot that allows users to have intelligent conversations with Wikipedia articles using advanced natural language processing.
 
-## 🚀 Features
+## What it does
 
-- Load any Wikipedia article by URL
-- Ask questions about the article content
-- Conversational memory (remembers previous questions in the session)
-- Real-time chat interface
-- Vector-based semantic search for accurate answers
+Load any Wikipedia article and ask questions about it in natural language. The AI will provide detailed, contextual answers based on the article content, maintaining conversation memory for follow-up questions.
 
-## 🛠 Tech Stack
+## Tech Stack
 
-### Backend
-- **Flask** - Web framework
-- **LangChain** - LLM orchestration and chains
-- **OpenAI GPT** - Language model for answering questions
-- **FAISS** - Vector database for semantic search
-- **Tiktoken** - Token counting and text processing
+- **Backend**: Flask (Python web framework)
+- **AI/ML**: 
+  - OpenAI GPT-3.5-turbo (conversational AI)
+  - LangChain (AI application framework)
+  - ChromaDB (vector database for semantic search)
+  - OpenAI Embeddings (text-embedding-ada-002)
+- **Data Processing**:
+  - Wikipedia MediaWiki API (content fetching)
+  - BeautifulSoup4 (HTML parsing)
+  - Text chunking and preprocessing
+- **Frontend**: Vanilla JavaScript, HTML5, CSS3
+- **Deployment**: Railway (cloud platform)
+- **Production Server**: Gunicorn
 
-### Frontend
-- **HTML/CSS/JavaScript** - Simple, responsive chat interface
-- **Fetch API** - Asynchronous communication with backend
+## Key Features
 
-### Data Processing
-- **Wikipedia REST API** - Article content retrieval
-- **Text Chunking** - Overlapping chunks for better context
-- **OpenAI Embeddings** - Vector representations of text
+- 🔍 **Semantic Search**: Finds relevant information using vector embeddings
+- 💬 **Conversational Memory**: Remembers context throughout the conversation
+- 🎯 **Smart Retrieval**: Uses MMR (Maximal Marginal Relevance) for diverse, relevant responses
+- 📊 **Session Management**: Handles multiple concurrent users
+- 🔄 **Topic Tracking**: Provides varied responses to similar questions
+- ⚡ **Real-time Processing**: Fast response times with optimized chunking
 
-## 📋 Prerequisites
+## How it Works
 
-- Python 3.8+
-- OpenAI API key
+1. **Article Loading**: Fetches Wikipedia content via MediaWiki API
+2. **Text Processing**: Splits content into semantic chunks (1000 chars, 200 overlap)
+3. **Vector Storage**: Creates embeddings and stores in ChromaDB
+4. **Conversational AI**: Uses LangChain's retrieval-augmented generation (RAG)
+5. **Smart Responses**: Combines retrieved context with conversation history
 
-## 🔧 Installation
+## Quick Start
 
-1. **Clone and setup**
-   ```bash
-   git clone <repository-url>
-   cd chatwithwiki
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+```bash
+# Clone and setup
+git clone <repository-url>
+cd chatwithwiki
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Install dependencies
+pip install -r requirements.txt
 
-3. **Environment setup**
-   ```bash
-   cp env.example .env
-   # Edit .env and add your OpenAI API key
-   ```
+# Set environment variables
+echo "OPENAI_API_KEY=your_api_key_here" > .env
 
-4. **Run the application**
-   ```bash
-   python app.py
-   ```
-
-5. **Open browser**
-   Navigate to `http://localhost:5000`
-
-## 🎯 Usage
-
-1. **Load Article**: Paste a Wikipedia URL and click "Load Article"
-2. **Ask Questions**: Type questions about the article content
-3. **Conversational**: Follow up with related questions - the bot remembers context
-
-## 🏗 Architecture
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Flask API      │    │   LangChain     │
-│   (HTML/JS)     │◄──►│   (Routes)       │◄──►│   (QA Chain)    │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                │                        │
-                                ▼                        ▼
-                       ┌──────────────────┐    ┌─────────────────┐
-                       │   Session        │    │   FAISS Vector  │
-                       │   Management     │    │   Store         │
-                       └──────────────────┘    └─────────────────┘
+# Run locally
+python app.py
 ```
 
-## 📁 Project Structure
+Visit `http://localhost:8069` and start chatting with Wikipedia!
 
-```
-chatwithwiki/
-├── app.py                 # Main Flask application
-├── modules/
-│   ├── __init__.py
-│   ├── wikipedia_fetcher.py    # Wikipedia API integration
-│   ├── text_processor.py       # Text chunking and preprocessing
-│   ├── chain_factory.py        # LangChain setup
-│   └── session_manager.py      # Session state management
-├── static/
-│   ├── style.css              # Frontend styling
-│   └── script.js              # Frontend JavaScript
-├── templates/
-│   └── index.html             # Main chat interface
-├── requirements.txt           # Python dependencies
-├── env.example               # Environment variables template
-└── README.md                 # This file
-```
+## API Endpoints
 
-## 🔒 Security Notes
+- `POST /api/load` - Load Wikipedia article
+- `POST /api/chat` - Send message to AI
+- `GET /api/health` - Health check
+- `GET /api/sessions` - List active sessions
 
-- Never commit your `.env` file with real API keys
-- API keys are handled server-side only
-- Sessions are stored in memory (consider Redis for production)
+## Environment Variables
 
-## 🚀 Deployment
+- `OPENAI_API_KEY` - Your OpenAI API key (required)
+- `PORT` - Server port (default: 8069)
+- `FLASK_ENV` - Environment mode (development/production)
 
-For production deployment:
+## Deployment
 
-1. **Heroku**
-   ```bash
-   # Add Procfile
-   echo "web: gunicorn app:app" > Procfile
-   ```
+Ready for Railway deployment with included `Procfile`, `railway.toml`, and production configurations.
 
-2. **Environment Variables**
-   Set `OPENAI_API_KEY` in your hosting platform
+---
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📄 License
-
-MIT License - see LICENSE file for details 
+Built with ❤️ using modern AI technologies for intelligent document interaction. 
