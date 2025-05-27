@@ -273,6 +273,58 @@ def health_check():
     })
 
 
+@app.route('/api/debug', methods=['GET'])
+def debug_info():
+    """Debug endpoint to check configuration without exposing sensitive data."""
+    try:
+        api_key = os.getenv('OPENAI_API_KEY')
+        return jsonify({
+            "openai_key_configured": bool(api_key),
+            "openai_key_length": len(api_key) if api_key else 0,
+            "openai_key_prefix": api_key[:7] + "..." if api_key and len(api_key) > 10 else "Invalid",
+            "chain_factory_initialized": chain_factory is not None,
+            "environment": os.getenv('FLASK_ENV', 'production'),
+            "python_version": os.sys.version,
+            "available_env_vars": [key for key in os.environ.keys() if not key.startswith('_')]
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/test-openai', methods=['GET'])
+def test_openai():
+    """Test OpenAI API connectivity."""
+    try:
+        if not chain_factory:
+            return jsonify({"error": "ChainFactory not initialized"}), 500
+        
+        # Simple test - try to create embeddings for a short text
+        from openai import OpenAI
+        client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        
+        # Test with a very simple request
+        response = client.embeddings.create(
+            model="text-embedding-ada-002",
+            input="test",
+            timeout=30
+        )
+        
+        return jsonify({
+            "status": "success",
+            "message": "OpenAI API connection successful",
+            "embedding_dimensions": len(response.data[0].embedding),
+            "model_used": response.model
+        })
+        
+    except Exception as e:
+        logger.error(f"OpenAI API test failed: {str(e)}")
+        return jsonify({
+            "status": "failed",
+            "error": str(e),
+            "error_type": type(e).__name__
+        }), 500
+
+
 @app.errorhandler(404)
 def not_found(error):
     """Handle 404 errors."""

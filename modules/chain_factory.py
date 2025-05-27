@@ -31,23 +31,49 @@ class ChainFactory:
         if not self.api_key:
             raise ValueError("OpenAI API key is required")
         
-        # Initialize embeddings
-        self.embeddings = OpenAIEmbeddings(
-            openai_api_key=self.api_key,
-            model="text-embedding-ada-002",
-            request_timeout=60,  # Increased timeout
-            max_retries=3        # Add retry logic
-        )
+        # Initialize embeddings with alternative configuration
+        try:
+            self.embeddings = OpenAIEmbeddings(
+                openai_api_key=self.api_key,
+                model="text-embedding-ada-002",
+                request_timeout=60,
+                max_retries=3,
+                openai_api_base=None,  # Explicitly set to None to use default
+                openai_organization=None  # Explicitly set to None
+            )
+        except Exception as e:
+            # Fallback initialization
+            import openai
+            openai.api_key = self.api_key
+            self.embeddings = OpenAIEmbeddings(
+                model="text-embedding-ada-002",
+                request_timeout=60,
+                max_retries=3
+            )
         
-        # Initialize LLM
-        self.llm = ChatOpenAI(
-            openai_api_key=self.api_key,
-            model="gpt-3.5-turbo",
-            temperature=0.3,
-            max_tokens=800,
-            request_timeout=60,  # Increased timeout
-            max_retries=3        # Add retry logic
-        )
+        # Initialize LLM with alternative configuration
+        try:
+            self.llm = ChatOpenAI(
+                openai_api_key=self.api_key,
+                model="gpt-3.5-turbo",
+                temperature=0.3,
+                max_tokens=800,
+                request_timeout=60,
+                max_retries=3,
+                openai_api_base=None,  # Explicitly set to None to use default
+                openai_organization=None  # Explicitly set to None
+            )
+        except Exception as e:
+            # Fallback initialization
+            import openai
+            openai.api_key = self.api_key
+            self.llm = ChatOpenAI(
+                model="gpt-3.5-turbo",
+                temperature=0.3,
+                max_tokens=800,
+                request_timeout=60,
+                max_retries=3
+            )
         
         # Initialize chat history
         self.chat_history = []
