@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatWithWiki - Wikipedia Conversational AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">
+                    <i class="fab fa-wikipedia-w"></i>
+                    ChatWithWiki
+                </h1>
+                <p class="subtitle">Ask questions about any Wikipedia article</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- URL Input Section -->
+            <div class="url-section" id="urlSection">
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-link input-icon"></i>
+                        <input 
+                            type="url" 
+                            id="urlInput" 
+                            placeholder="Paste Wikipedia URL here (e.g., https://en.wikipedia.org/wiki/Artificial_intelligence)"
+                            class="url-input"
+                        >
+                    </div>
+                    <button id="loadBtn" class="load-btn">
+                        <span class="btn-text">Load Article</span>
+                        <i class="fas fa-arrow-right btn-icon"></i>
+                    </button>
+                </div>
+                <div class="url-examples">
+                    <p>Try these examples:</p>
+                    <div class="example-links">
+                        <button class="example-link" data-url="https://en.wikipedia.org/wiki/Artificial_intelligence">Artificial Intelligence</button>
+                        <button class="example-link" data-url="https://en.wikipedia.org/wiki/Climate_change">Climate Change</button>
+                        <button class="example-link" data-url="https://en.wikipedia.org/wiki/Python_(programming_language)">Python Programming</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-section hidden" id="loadingSection">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading article and preparing AI...</p>
+                </div>
+            </div>
+
+            <!-- Chat Section -->
+            <div class="chat-section hidden" id="chatSection">
+                <!-- Article Info -->
+                <div class="article-info" id="articleInfo">
+                    <div class="article-header">
+                        <h3 id="articleTitle">Article Title</h3>
+                        <button id="newArticleBtn" class="new-article-btn">
+                            <i class="fas fa-plus"></i>
+                            Load New Article
+                        </button>
+                    </div>
+                    <div class="article-stats" id="articleStats"></div>
+                </div>
+
+                <!-- Chat Messages -->
+                <div class="chat-messages" id="chatMessages">
+                    <div class="welcome-message">
+                        <div class="message bot-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <p>Hi! I've loaded the Wikipedia article. Ask me anything about it!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-section">
+                    <div class="chat-input-wrapper">
+                        <input 
+                            type="text" 
+                            id="chatInput" 
+                            placeholder="Ask a question about the article..."
+                            class="chat-input"
+                        >
+                        <button id="sendBtn" class="send-btn" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="input-suggestions">
+                        <button class="suggestion-btn">What is this article about?</button>
+                        <button class="suggestion-btn">Summarize the main points</button>
+                        <button class="suggestion-btn">What are the key facts?</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 ChatWithWiki. Powered by OpenAI and LangChain.</p>
+        </footer>
+    </div>
+
+    <!-- Error Toast -->
+    <div class="toast error-toast hidden" id="errorToast">
+        <div class="toast-content">
+            <i class="fas fa-exclamation-circle"></i>
+            <span class="toast-message"></span>
+        </div>
+        <button class="toast-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Success Toast -->
+    <div class="toast success-toast hidden" id="successToast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span class="toast-message"></span>
+        </div>
+        <button class="toast-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html> 

@@ -1,0 +1,12 @@
+Flask==2.3.3
+requests==2.31.0
+openai>=1.6.1
+langchain>=0.3.25
+langchain-openai>=0.3.18
+langchain-core>=0.3.61
+langchain-community>=0.3.18
+chromadb>=0.4.0
+tiktoken>=0.5.1
+python-dotenv==1.0.0
+gunicorn==21.2.0
+beautifulsoup4==4.12.2 
